@@ -3,6 +3,8 @@ package com.example.iancu.hungryhungry;
 import android.animation.Animator;
 import android.animation.AnimatorListenerAdapter;
 import android.annotation.TargetApi;
+import android.support.v4.app.Fragment;
+import android.app.FragmentTransaction;
 import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.support.annotation.NonNull;
@@ -22,6 +24,7 @@ import android.provider.ContactsContract;
 import android.text.TextUtils;
 import android.util.Log;
 import android.view.KeyEvent;
+import android.view.LayoutInflater;
 import android.view.View;
 import android.view.View.OnClickListener;
 import android.view.inputmethod.EditorInfo;
@@ -29,6 +32,8 @@ import android.widget.ArrayAdapter;
 import android.widget.AutoCompleteTextView;
 import android.widget.Button;
 import android.widget.EditText;
+import android.widget.FrameLayout;
+import android.widget.ScrollView;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -42,7 +47,9 @@ import com.twitter.sdk.android.core.identity.TwitterLoginButton;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
+import butterknife.OnClick;
 import io.fabric.sdk.android.Fabric;
+
 import java.util.ArrayList;
 import java.util.List;
 
@@ -91,6 +98,8 @@ public class LoginActivity extends AppCompatActivity implements LoaderCallbacks<
     Button mEmailSignInButton;
     @BindView(R.id.registration_button)
     Button mRegistrationButton;
+    @BindView(R.id.Login_content)
+    FrameLayout content;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -98,6 +107,7 @@ public class LoginActivity extends AppCompatActivity implements LoaderCallbacks<
         TwitterAuthConfig authConfig = new TwitterAuthConfig(TWITTER_KEY, TWITTER_SECRET);
         Fabric.with(this, new Twitter(authConfig));
         setContentView(R.layout.activity_login);
+
         ButterKnife.bind(this);
         // Set up the login form.
 //        mEmailView = (AutoCompleteTextView) findViewById(R.id.email);
@@ -122,12 +132,7 @@ public class LoginActivity extends AppCompatActivity implements LoaderCallbacks<
                 attemptLogin();
             }
         });
-        mRegistrationButton.setOnClickListener(new OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                showRegistration();
-            }
-        });
+
 
 //        mLoginFormView = findViewById(R.id.login_form);
 //        mProgressView = findViewById(R.id.login_progress);
@@ -145,6 +150,7 @@ public class LoginActivity extends AppCompatActivity implements LoaderCallbacks<
                 String msg = "@" + session.getUserName() + " logged in! (#" + session.getUserId() + ")";
                 Toast.makeText(getApplicationContext(), msg, Toast.LENGTH_LONG).show();
             }
+
             @Override
             public void failure(TwitterException exception) {
                 Log.d("TwitterKit", "Login with Twitter failure", exception);
@@ -152,12 +158,36 @@ public class LoginActivity extends AppCompatActivity implements LoaderCallbacks<
         });
 
     }
+
     /**
      * Replaces the Login Screen with the Registration screen
-     *
-     * */
-    private void showRegistration() {
+     */
+    @OnClick(R.id.registration_button)
+    void showRegistration() {
+        try {
+            Registration_Form frag = new Registration_Form();
+            android.support.v4.app.FragmentTransaction ft = getSupportFragmentManager().beginTransaction();
+            ft.replace(R.id.Login_content, frag);
+            ft.setTransition(android.support.v4.app.FragmentTransaction.TRANSIT_FRAGMENT_OPEN);
+            ft.addToBackStack(null);
+            ft.commit();
+            mLoginFormView.setVisibility(View.GONE);
 
+
+        } catch (Exception e) {
+            Log.e("ERROR", e.toString());
+            e.printStackTrace();
+        }
+
+
+    }
+    /**
+     * This makes things go back to how they were before the new user button was clicked
+     * */
+    @Override
+    public void onBackPressed() {
+        if(mLoginFormView.getVisibility()==View.GONE) mLoginFormView.setVisibility(View.VISIBLE);
+        super.onBackPressed();
     }
 
     private void populateAutoComplete() {
@@ -355,9 +385,10 @@ public class LoginActivity extends AppCompatActivity implements LoaderCallbacks<
         int ADDRESS = 0;
         int IS_PRIMARY = 1;
     }
-/*
-* Call Twitter
-* */
+
+    /*
+    * Call Twitter
+    * */
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
@@ -410,7 +441,7 @@ public class LoginActivity extends AppCompatActivity implements LoaderCallbacks<
             showProgress(false);
 
             if (success) {
-                Intent I =new Intent(LoginActivity.this,MainActivity.class);
+                Intent I = new Intent(LoginActivity.this, MainActivity.class);
                 startActivity(I);
                 finish();
 
