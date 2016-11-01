@@ -2,10 +2,7 @@ package com.example.iancu.hungryhungry;
 
 import android.os.Bundle;
 import android.support.design.widget.FloatingActionButton;
-import android.support.design.widget.Snackbar;
-import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentTransaction;
-import android.support.v7.view.menu.MenuItemImpl;
 import android.support.v7.widget.SearchView;
 import android.util.Log;
 import android.view.View;
@@ -17,16 +14,19 @@ import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.view.Menu;
 import android.view.MenuItem;
-import android.widget.FrameLayout;
-import android.widget.Toast;
+
+import com.example.iancu.hungryhungry.fragments.RestaurantContent;
+import com.example.iancu.hungryhungry.fragments.RestaurantList;
+import com.example.iancu.hungryhungry.fragments.UserProfile;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
+import de.hdodenhof.circleimageview.CircleImageView;
 
 public class MainActivity extends AppCompatActivity
         implements NavigationView.OnNavigationItemSelectedListener,
         RestaurantList.OnFragmentInteractionListener,
-        RestaurantContent.OnFragmentInteractionListener{
+        RestaurantContent.OnFragmentInteractionListener {
     @BindView(R.id.mySearchView)
     SearchView search;
     @BindView(R.id.nav_view)
@@ -52,14 +52,14 @@ public class MainActivity extends AppCompatActivity
         getSupportActionBar().setTitle("");
 
 
-
-
 //        FloatingActionButton fab = (FloatingActionButton) findViewById(R.id.fab);
         fab.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                Snackbar.make(view, "Replace with your own action", Snackbar.LENGTH_LONG)
-                        .setAction("Action", null).show();
+                list = new RestaurantList();
+                FragmentTransaction fm2 = getSupportFragmentManager().beginTransaction();
+                fm2.replace(R.id.content_frame, list);
+                fm2.commit();
             }
         });
 
@@ -71,6 +71,18 @@ public class MainActivity extends AppCompatActivity
 
 //        NavigationView navigationView = (NavigationView) findViewById(R.id.nav_view);
         navigationView.setNavigationItemSelectedListener(this);
+        View header = navigationView.getHeaderView(0);
+        CircleImageView myFace = (CircleImageView) header.findViewById(R.id.imageView);
+        myFace.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                UserProfile profile = new UserProfile();
+                FragmentTransaction fm = getSupportFragmentManager().beginTransaction();
+                fm.replace(R.id.content_frame, profile);
+                fm.commit();
+                drawer.closeDrawer(GravityCompat.START);
+            }
+        });
 
 
 //        UserProfile profile =new UserProfile();
@@ -78,21 +90,21 @@ public class MainActivity extends AppCompatActivity
 //        fm.replace(R.id.content_frame,profile);
 //        fm.commit();
 
-//        list =new RestaurantList();
-//        FragmentTransaction fm2 = getSupportFragmentManager().beginTransaction();
-//        fm2.replace(R.id.content_frame,list);
-//        fm2.commit();
+        list = new RestaurantList();
+        FragmentTransaction fm2 = getSupportFragmentManager().beginTransaction();
+        fm2.replace(R.id.content_frame, list);
+        fm2.commit();
 
-        RestaurantContent content =new RestaurantContent();
-        FragmentTransaction fm = getSupportFragmentManager().beginTransaction();
-        fm.replace(R.id.content_frame,content);
-        fm.commit();
+//        RestaurantContent content =new RestaurantContent();
+//        FragmentTransaction fm = getSupportFragmentManager().beginTransaction();
+//        fm.replace(R.id.content_frame,content);
+//        fm.commit();
 
 
         search.setOnQueryTextListener(new SearchView.OnQueryTextListener() {
             @Override
             public boolean onQueryTextSubmit(String query) {
-//                list.setTest(query);
+                list.setTest(query);
                 return false;
             }
 
@@ -103,10 +115,9 @@ public class MainActivity extends AppCompatActivity
         });
 
 
-        menu =navigationView.getMenu();
+        menu = navigationView.getMenu();
         menu.clear();
-        menu.add("I wonder how long i can make this title and not have it look like i just threw a bunch of letters at the screen");
-
+        menu.add("Specific Restaurant");
 
 
     }
@@ -148,10 +159,12 @@ public class MainActivity extends AppCompatActivity
     public boolean onNavigationItemSelected(MenuItem item) {
         // Handle navigation view item clicks here.
         String id = item.getTitle().toString();
-        if (id.equals("I wonder how long i can make this title and " +
-                "not have it look like i just threw a bunch of letters at the screen"))
-            Toast.makeText(this,"I wonder how long i can make this title and not have it look like i just threw a bunch of letters at the screen",Toast.LENGTH_SHORT).show();
-
+        if (id.equals("Specific Restaurant")) {
+            RestaurantContent content = new RestaurantContent();
+            FragmentTransaction fm3 = getSupportFragmentManager().beginTransaction();
+            fm3.replace(R.id.content_frame, content);
+            fm3.commit();
+        }
 
 
         DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
@@ -161,7 +174,7 @@ public class MainActivity extends AppCompatActivity
 
     @Override
     public void onFragmentInteraction(int x) {
-        Log.i("DUDUDU",""+x);
+        Log.i("DUDUDU", "" + x);
     }
 
     @Override

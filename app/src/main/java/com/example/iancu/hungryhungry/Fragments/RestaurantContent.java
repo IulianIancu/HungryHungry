@@ -1,13 +1,17 @@
-package com.example.iancu.hungryhungry;
+package com.example.iancu.hungryhungry.fragments;
 
 import android.content.Context;
-import android.net.Uri;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.support.v4.view.ViewPager;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+
+import com.example.iancu.hungryhungry.R;
+
+import butterknife.BindView;
+import butterknife.ButterKnife;
 
 
 /**
@@ -19,6 +23,11 @@ import android.view.ViewGroup;
 public class RestaurantContent extends Fragment {
 
     private OnFragmentInteractionListener mListener;
+    @BindView(R.id.restaurant_pager)
+    ViewPager pager;
+    ViewPagerAdapter adapter;
+    CharSequence titles[]={"Classic","Pop","Rock"};
+    int numboftabs =3;
 
     public RestaurantContent() {
         // Required empty public constructor
@@ -29,7 +38,11 @@ public class RestaurantContent extends Fragment {
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         View v =inflater.inflate(R.layout.fragment_restaurant_content, container, false);
-        ViewPager pager =new ViewPager();
+
+        ButterKnife.bind(this,v);
+        adapter =new ViewPagerAdapter(getFragmentManager(),titles,numboftabs);
+        pager.setAdapter(adapter);
+
         return v ;
     }
 
@@ -60,7 +73,7 @@ public class RestaurantContent extends Fragment {
      * <p>
      * See the Android Training lesson <a href=
      * "http://developer.android.com/training/basics/fragments/communicating.html"
-     * >Communicating with Other Fragments</a> for more information.
+     * >Communicating with Other fragments</a> for more information.
      */
     public interface OnFragmentInteractionListener {
         // TODO: Update argument type and name

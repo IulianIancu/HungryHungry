@@ -1,4 +1,4 @@
-package com.example.iancu.hungryhungry;
+package com.example.iancu.hungryhungry.fragments;
 
 
 import android.os.Bundle;
@@ -11,6 +11,7 @@ import android.widget.CheckBox;
 import android.widget.EditText;
 
 import com.codetroopers.betterpickers.datepicker.DatePickerBuilder;
+import com.example.iancu.hungryhungry.R;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
