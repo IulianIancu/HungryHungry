@@ -15,9 +15,9 @@ import android.support.v7.widget.Toolbar;
 import android.view.Menu;
 import android.view.MenuItem;
 
-import com.example.iancu.hungryhungry.fragments.RestaurantContent;
-import com.example.iancu.hungryhungry.fragments.RestaurantList;
-import com.example.iancu.hungryhungry.fragments.UserProfile;
+import com.example.iancu.hungryhungry.fragment.RestaurantContent;
+import com.example.iancu.hungryhungry.fragment.RestaurantList;
+import com.example.iancu.hungryhungry.fragment.UserProfile;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;

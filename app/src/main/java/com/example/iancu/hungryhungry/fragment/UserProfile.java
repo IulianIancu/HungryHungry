@@ -1,4 +1,4 @@
-package com.example.iancu.hungryhungry.fragments;
+package com.example.iancu.hungryhungry.fragment;
 
 
 import android.os.Bundle;
@@ -9,13 +9,14 @@ import android.view.ViewGroup;
 
 import com.example.iancu.hungryhungry.R;
 
+
 /**
  * A simple {@link Fragment} subclass.
  */
-public class TabDescription extends Fragment {
+public class UserProfile extends Fragment {
 
 
-    public TabDescription() {
+    public UserProfile() {
         // Required empty public constructor
     }
 
@@ -23,9 +24,11 @@ public class TabDescription extends Fragment {
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
-        View v =inflater.inflate(R.layout.fragment_tab_description, container, false);
+        // Inflate the layout for this fragment
+        View v = inflater.inflate(R.layout.fragment_user_profile, container, false);
 
-        return v ;
+
+        return v;
     }
 
 }

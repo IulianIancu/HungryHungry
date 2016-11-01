@@ -1,4 +1,4 @@
-package com.example.iancu.hungryhungry.fragments;
+package com.example.iancu.hungryhungry.fragment;
 
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;

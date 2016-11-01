@@ -33,7 +33,7 @@ import android.widget.FrameLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
-import com.example.iancu.hungryhungry.fragments.Registration_Form;
+import com.example.iancu.hungryhungry.fragment.Registration_Form;
 import com.twitter.sdk.android.Twitter;
 import com.twitter.sdk.android.core.Callback;
 import com.twitter.sdk.android.core.Result;
