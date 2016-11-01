@@ -80,7 +80,7 @@
             <LinearLayout
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:orientation="horizontal">
+                android:orientation="vertical">
                 <CheckBox
                     android:id="@+id/allergens_peanuts"
                     android:layout_width="wrap_content"
@@ -108,7 +108,16 @@
                     android:text="Tuna"/>
 
             </LinearLayout>
-
+            <Button
+                android:id="@+id/confirm"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Confirm"/>
+            <Button
+                android:id="@+id/reset"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Reset"/>
         </LinearLayout>
     </ScrollView>
 
