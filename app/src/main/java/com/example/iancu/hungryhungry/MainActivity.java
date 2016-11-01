@@ -18,6 +18,12 @@ import android.view.MenuItem;
 import com.example.iancu.hungryhungry.fragment.RestaurantContent;
 import com.example.iancu.hungryhungry.fragment.RestaurantList;
 import com.example.iancu.hungryhungry.fragment.UserProfile;
+import com.example.iancu.hungryhungry.interfaces.MainActivityIntf;
+import com.example.iancu.hungryhungry.model.Categories;
+import com.example.iancu.hungryhungry.model.Category;
+import com.example.iancu.hungryhungry.presenter.TestPresenterImpl;
+
+import java.util.List;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
@@ -26,7 +32,7 @@ import de.hdodenhof.circleimageview.CircleImageView;
 public class MainActivity extends AppCompatActivity
         implements NavigationView.OnNavigationItemSelectedListener,
         RestaurantList.OnFragmentInteractionListener,
-        RestaurantContent.OnFragmentInteractionListener {
+        RestaurantContent.OnFragmentInteractionListener, MainActivityIntf{
     @BindView(R.id.mySearchView)
     SearchView search;
     @BindView(R.id.nav_view)
@@ -39,6 +45,7 @@ public class MainActivity extends AppCompatActivity
     Toolbar toolbar;
     Menu menu;
     RestaurantList list;
+    TestPresenterImpl presenter;
 //    @BindView(R.id.content_frame)
 //    FrameLayout frame;
 
@@ -83,6 +90,12 @@ public class MainActivity extends AppCompatActivity
                 drawer.closeDrawer(GravityCompat.START);
             }
         });
+
+
+//        connect the presenter to the activity
+        presenter =new TestPresenterImpl(this);
+        presenter.getCats();
+
 
 
 //        UserProfile profile =new UserProfile();
@@ -180,5 +193,13 @@ public class MainActivity extends AppCompatActivity
     @Override
     public void onFragmentInteraction() {
 
+    }
+
+    @Override
+    public void getCategories(List<Category> cats) {
+        for (Category cat: cats){
+            Categories catt =cat.getCategories();
+            menu.add(catt.getName());
+        }
     }
 }

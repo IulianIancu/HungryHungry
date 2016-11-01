@@ -2,6 +2,7 @@ package com.example.iancu.hungryhungry.connection;
 
 import com.example.iancu.hungryhungry.model.RestaurantCategory;
 
+import retrofit2.http.Header;
 import rx.Observable;
 
 import retrofit2.http.GET;
@@ -12,5 +13,5 @@ import retrofit2.http.GET;
 
 public interface ZomatoAPI {
     @GET("/api/v2.1/categories")
-    Observable<RestaurantCategory> getCategories();
+    Observable<RestaurantCategory> getCategories(@Header("user-key") String key);
 }
