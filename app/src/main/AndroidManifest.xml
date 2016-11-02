@@ -33,6 +33,9 @@
         <meta-data
             android:name="io.fabric.ApiKey"
             android:value="e4f7078dd7887bc240d5990363810a529cb3188d" />
+        <service
+            android:name=".service.FetchAddressService"
+            android:exported="false" />
     </application>
 
     <uses-permission android:name="android.permission.INTERNET" />

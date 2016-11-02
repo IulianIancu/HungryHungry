@@ -1,7 +1,16 @@
 package com.example.iancu.hungryhungry;
 
+import android.content.Intent;
+import android.content.pm.PackageManager;
+import android.location.Geocoder;
+import android.location.Location;
 import android.os.Bundle;
+import android.os.Handler;
+import android.os.ResultReceiver;
+import android.support.annotation.NonNull;
+import android.support.annotation.Nullable;
 import android.support.design.widget.FloatingActionButton;
+import android.support.v4.app.ActivityCompat;
 import android.support.v4.app.FragmentTransaction;
 import android.support.v7.widget.SearchView;
 import android.util.Log;
@@ -14,6 +23,7 @@ import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.view.Menu;
 import android.view.MenuItem;
+import android.widget.Toast;
 
 import com.example.iancu.hungryhungry.fragment.RestaurantContent;
 import com.example.iancu.hungryhungry.fragment.RestaurantList;
@@ -22,6 +32,10 @@ import com.example.iancu.hungryhungry.interfaces.MainActivityIntf;
 import com.example.iancu.hungryhungry.model.Categories;
 import com.example.iancu.hungryhungry.model.Category;
 import com.example.iancu.hungryhungry.presenter.TestPresenterImpl;
+import com.example.iancu.hungryhungry.service.FetchAddressService;
+import com.google.android.gms.common.ConnectionResult;
+import com.google.android.gms.common.api.GoogleApiClient;
+import com.google.android.gms.location.LocationServices;
 
 import java.util.List;
 
@@ -32,7 +46,9 @@ import de.hdodenhof.circleimageview.CircleImageView;
 public class MainActivity extends AppCompatActivity
         implements NavigationView.OnNavigationItemSelectedListener,
         RestaurantList.OnFragmentInteractionListener,
-        RestaurantContent.OnFragmentInteractionListener, MainActivityIntf{
+        RestaurantContent.OnFragmentInteractionListener,
+        MainActivityIntf, GoogleApiClient.ConnectionCallbacks,
+        GoogleApiClient.OnConnectionFailedListener {
     @BindView(R.id.mySearchView)
     SearchView search;
     @BindView(R.id.nav_view)
@@ -46,8 +62,10 @@ public class MainActivity extends AppCompatActivity
     Menu menu;
     RestaurantList list;
     TestPresenterImpl presenter;
-//    @BindView(R.id.content_frame)
-//    FrameLayout frame;
+
+    protected GoogleApiClient mGoogleApiClient;
+    protected Location mLastLocation;
+    private AddressResultReceiver mResultReceiver;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -92,10 +110,22 @@ public class MainActivity extends AppCompatActivity
         });
 
 
-//        connect the presenter to the activity
-        presenter =new TestPresenterImpl(this);
-        presenter.getCats();
+//        Get google API going
+        mResultReceiver = new AddressResultReceiver(new Handler());
+        mGoogleApiClient = new GoogleApiClient.Builder(this)
+                .addConnectionCallbacks(this)
+                .addOnConnectionFailedListener(this)
+                .addApi(LocationServices.API)
+                .build();
+        mGoogleApiClient.connect();
+        if (mGoogleApiClient.isConnected() && mLastLocation != null) {
+            startIntentService();
+            Log.e("BOOP","Located");
+        }
 
+//        connect the presenter to the activity
+        presenter = new TestPresenterImpl(this);
+//        presenter.getCats();
 
 
 //        UserProfile profile =new UserProfile();
@@ -178,6 +208,7 @@ public class MainActivity extends AppCompatActivity
             fm3.replace(R.id.content_frame, content);
             fm3.commit();
         }
+        Toast.makeText(this, id, Toast.LENGTH_SHORT).show();
 
 
         DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
@@ -197,9 +228,82 @@ public class MainActivity extends AppCompatActivity
 
     @Override
     public void getCategories(List<Category> cats) {
-        for (Category cat: cats){
-            Categories catt =cat.getCategories();
+        for (Category cat : cats) {
+            Categories catt = cat.getCategories();
             menu.add(catt.getName());
         }
+    }
+
+    @Override
+    public void onConnected(@Nullable Bundle bundle) {
+        Log.e("Boop","Got Connected");
+        if (ActivityCompat.checkSelfPermission(this, android.Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED && ActivityCompat.checkSelfPermission(this, android.Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
+
+            return;
+        }
+        mLastLocation = LocationServices.FusedLocationApi.getLastLocation(mGoogleApiClient);
+        if (mLastLocation != null) {
+            // Determine whether a Geocoder is available.
+            if (!Geocoder.isPresent()) {
+                Toast.makeText(this, "no_geocoder_available", Toast.LENGTH_LONG).show();
+                return;
+            }
+            // It is possible that the user presses the button to get the address before the
+            // GoogleApiClient object successfully connects. In such a case, mAddressRequested
+            // is set to true, but no attempt is made to fetch the address (see
+            // fetchAddressButtonHandler()) . Instead, we start the intent service here if the
+            // user has requested an address, since we now have a connection to GoogleApiClient.
+
+            startIntentService();
+
+        }
+
+    }
+
+    @Override
+    public void onConnectionSuspended(int i) {
+        Log.i("WAIT", "Connection suspended");
+        mGoogleApiClient.connect();
+    }
+
+    protected void startIntentService() {
+        // Create an intent for passing to the intent service responsible for fetching the address.
+        Intent intent = new Intent(this, FetchAddressService.class);
+
+        // Pass the result receiver as an extra to the service.
+        intent.putExtra(Constants.RECEIVER, mResultReceiver);
+
+        // Pass the location data as an extra to the service.
+        intent.putExtra(Constants.LOCATION_DATA_EXTRA, mLastLocation);
+
+        // Start the service. If the service isn't already running, it is instantiated and started
+        // (creating a process for it if needed); if it is running then it remains running. The
+        // service kills itself automatically once all intents are processed.
+        startService(intent);
+    }
+
+    @Override
+    public void onConnectionFailed(@NonNull ConnectionResult connectionResult) {
+        Log.i("OOPS", "Connection failed: " + connectionResult.getErrorCode());
+    }
+
+    class AddressResultReceiver extends ResultReceiver {
+        public AddressResultReceiver(Handler handler) {
+            super(handler);
+        }
+
+        /**
+         * Receives data sent from FetchAddressIntentService and updates the UI in MainActivity.
+         */
+        @Override
+        protected void onReceiveResult(int resultCode, Bundle resultData) {
+            Log.e("Boop","The address");
+            // Display the address string or an error message sent from the intent service.
+            String address = resultData.getString(Constants.RESULT_DATA_KEY);
+            menu.add(address);
+
+
+        }
+
     }
 }
