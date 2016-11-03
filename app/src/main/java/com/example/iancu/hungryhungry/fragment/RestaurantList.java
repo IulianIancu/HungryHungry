@@ -3,12 +3,20 @@ package com.example.iancu.hungryhungry.fragment;
 import android.content.Context;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
+import android.support.v4.widget.SwipeRefreshLayout;
+import android.support.v7.widget.LinearLayoutManager;
+import android.support.v7.widget.RecyclerView;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.TextView;
 
 import com.example.iancu.hungryhungry.R;
+import com.example.iancu.hungryhungry.adapter.RestaurantListAdapter;
+import com.example.iancu.hungryhungry.model.NearbyRestaurant;
+
+import java.util.List;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
@@ -27,8 +35,13 @@ public class RestaurantList extends Fragment {
     public RestaurantList() {
         // Required empty public constructor
     }
-    @BindView(R.id.test)
-    TextView test;
+    @BindView(R.id.restaurant_list)
+    RecyclerView restaurantList;
+    @BindView(R.id.swipe_refresh)
+    SwipeRefreshLayout refresh;
+    @BindView(R.id.pushy)
+    TextView pushy;
+    RestaurantListAdapter adapter;
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
@@ -37,6 +50,17 @@ public class RestaurantList extends Fragment {
         ButterKnife.bind(this,v);
         if(mListener != null)
             mListener.onFragmentInteraction(1337);
+        restaurantList.setLayoutManager(new LinearLayoutManager(v.getContext()));
+
+
+//        Placeholder until i think of what to do with it
+        refresh.setOnRefreshListener(new SwipeRefreshLayout.OnRefreshListener() {
+            @Override
+            public void onRefresh() {
+                refresh.setRefreshing(false);
+            }
+        });
+
         return v;
     }
 
@@ -54,7 +78,19 @@ public class RestaurantList extends Fragment {
     }
 
     public void setTest(String test1){
-        test.setText(test1);
+
+    }
+    public void setRestaurantList (List<NearbyRestaurant> rests){
+        if (rests==null) Log.e("OH NOES","LIST IS DED");
+        if (restaurantList ==null){
+            Log.e("OH NOES","RECYCLER IS DED");
+
+            return;
+        }
+        adapter =new RestaurantListAdapter(rests,R.layout.recycler_rest_list_row,getContext());
+        if (adapter ==null) Log.e("OH NOES","ADAPTER IS DED");
+        restaurantList.setAdapter(adapter);
+        pushy.setVisibility(View.GONE);
     }
     @Override
     public void onDetach() {

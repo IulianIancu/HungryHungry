@@ -1,11 +1,14 @@
 package com.example.iancu.hungryhungry.presenter;
 
+import android.location.Location;
 import android.util.Log;
 
 import com.example.iancu.hungryhungry.connection.ConnectionService;
 import com.example.iancu.hungryhungry.connection.ZomatoAPI;
 import com.example.iancu.hungryhungry.interfaces.MainActivityIntf;
 import com.example.iancu.hungryhungry.model.Category;
+import com.example.iancu.hungryhungry.model.NearbyRestaurant;
+import com.example.iancu.hungryhungry.model.NearbySearch;
 import com.example.iancu.hungryhungry.model.RestaurantCategory;
 
 import java.util.List;
@@ -50,8 +53,31 @@ public class TestPresenterImpl extends TestPresenter {
             @Override
             public void onNext(RestaurantCategory restaurantCategory) {
                 List<Category> categories =restaurantCategory.getCategories();
-                intf.getCategories(categories);
+                intf.recieveCategories(categories);
             }
         }));
+    }
+
+    @Override
+    public void getNearbyRes(Location location) {
+        String temp ="WROONG";
+        api = ConnectionService.getConnectionService();
+        subscription.add(api.getNearbyRes(key,location.getLatitude(),location.getLongitude())
+                .subscribeOn(Schedulers.newThread())
+                .observeOn(AndroidSchedulers.mainThread())
+                .subscribe(new Observer<NearbySearch>() {
+                    @Override
+                    public void onCompleted() {
+                    }
+                    @Override
+                    public void onError(Throwable e) {
+                        Log.e("ERR", e.toString());
+                    }
+
+                    @Override
+                    public void onNext(NearbySearch nearbySearch) {
+                        intf.recieveRestaurants(nearbySearch.getNearbyRestaurants());
+                    }
+                }));
     }
 }

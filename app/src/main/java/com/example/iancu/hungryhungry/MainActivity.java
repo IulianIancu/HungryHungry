@@ -31,6 +31,8 @@ import com.example.iancu.hungryhungry.fragment.UserProfile;
 import com.example.iancu.hungryhungry.interfaces.MainActivityIntf;
 import com.example.iancu.hungryhungry.model.Categories;
 import com.example.iancu.hungryhungry.model.Category;
+import com.example.iancu.hungryhungry.model.NearbyRestaurant;
+import com.example.iancu.hungryhungry.model.Restaurant;
 import com.example.iancu.hungryhungry.presenter.TestPresenterImpl;
 import com.example.iancu.hungryhungry.service.FetchAddressService;
 import com.google.android.gms.common.ConnectionResult;
@@ -62,6 +64,7 @@ public class MainActivity extends AppCompatActivity
     Menu menu;
     RestaurantList list;
     TestPresenterImpl presenter;
+    List<NearbyRestaurant> theActualList;
 
     protected GoogleApiClient mGoogleApiClient;
     protected Location mLastLocation;
@@ -81,10 +84,12 @@ public class MainActivity extends AppCompatActivity
         fab.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                list = new RestaurantList();
-                FragmentTransaction fm2 = getSupportFragmentManager().beginTransaction();
-                fm2.replace(R.id.content_frame, list);
-                fm2.commit();
+//                list = new RestaurantList();
+//                FragmentTransaction fm2 = getSupportFragmentManager().beginTransaction();
+//                fm2.replace(R.id.content_frame, list);
+//                fm2.commit();
+                Log.i("@(O_O)@",""+theActualList.size());
+                list.setRestaurantList(theActualList);
             }
         });
 
@@ -147,7 +152,10 @@ public class MainActivity extends AppCompatActivity
         search.setOnQueryTextListener(new SearchView.OnQueryTextListener() {
             @Override
             public boolean onQueryTextSubmit(String query) {
-                list.setTest(query);
+                list = new RestaurantList();
+                FragmentTransaction fm2 = getSupportFragmentManager().beginTransaction();
+                fm2.replace(R.id.content_frame, list);
+                fm2.commit();
                 return false;
             }
 
@@ -227,11 +235,25 @@ public class MainActivity extends AppCompatActivity
     }
 
     @Override
-    public void getCategories(List<Category> cats) {
+    public void recieveCategories(List<Category> cats) {
         for (Category cat : cats) {
             Categories catt = cat.getCategories();
             menu.add(catt.getName());
         }
+    }
+
+    @Override
+    public void recieveRestaurants(List<NearbyRestaurant> rests) {
+//        for (NearbyRestaurant rest:rests) {
+//            Restaurant re= rest.getRestaurant();
+//            menu.add(re.getName());
+//
+//        }
+        theActualList =rests;
+//        list.setRestaurantList(theActualList);
+
+
+
     }
 
     @Override
@@ -255,6 +277,7 @@ public class MainActivity extends AppCompatActivity
             // user has requested an address, since we now have a connection to GoogleApiClient.
 
             startIntentService();
+            presenter.getNearbyRes(mLastLocation);
 
         }
 
@@ -301,7 +324,8 @@ public class MainActivity extends AppCompatActivity
             // Display the address string or an error message sent from the intent service.
             String address = resultData.getString(Constants.RESULT_DATA_KEY);
             menu.add(address);
-
+            menu.add(mLastLocation.getLatitude()+"  "+mLastLocation.getLongitude());
+            Log.i("LAT AND LONG",mLastLocation.getLatitude()+"  "+mLastLocation.getLongitude());
 
         }
 

@@ -3,16 +3,22 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     tools:context="com.example.iancu.hungryhungry.fragment.RestaurantList">
+    <TextView
+        android:id="@+id/pushy"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="PUSH DA BUTTON"
+        android:textSize="25sp"/>
 
-    <ScrollView
+    <android.support.v4.widget.SwipeRefreshLayout
+        android:id="@+id/swipe_refresh"
         android:layout_width="match_parent"
         android:layout_height="match_parent">
 
-        <TextView
-            android:id="@+id/test"
+        <android.support.v7.widget.RecyclerView
+            android:id="@+id/restaurant_list"
             android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:text="1" />
-    </ScrollView>
+            android:layout_height="wrap_content" />
 
+    </android.support.v4.widget.SwipeRefreshLayout>
 </FrameLayout>

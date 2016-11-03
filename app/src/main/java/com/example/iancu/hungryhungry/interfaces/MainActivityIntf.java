@@ -1,6 +1,8 @@
 package com.example.iancu.hungryhungry.interfaces;
 
 import com.example.iancu.hungryhungry.model.Category;
+import com.example.iancu.hungryhungry.model.NearbyRestaurant;
+import com.example.iancu.hungryhungry.model.Restaurant;
 
 import java.util.List;
 
@@ -9,5 +11,6 @@ import java.util.List;
  */
 
 public interface MainActivityIntf {
-    void getCategories(List<Category> cats);
+    void recieveCategories(List<Category> cats);
+    void recieveRestaurants(List<NearbyRestaurant> rests);
 }
