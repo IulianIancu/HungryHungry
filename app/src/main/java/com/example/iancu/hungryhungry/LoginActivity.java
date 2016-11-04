@@ -97,6 +97,7 @@ public class LoginActivity extends AppCompatActivity implements LoaderCallbacks<
     Button mRegistrationButton;
     @BindView(R.id.Login_content)
     FrameLayout content;
+    String TwitName;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -146,6 +147,8 @@ public class LoginActivity extends AppCompatActivity implements LoaderCallbacks<
                 // with your app's user model
                 String msg = "@" + session.getUserName() + " logged in! (#" + session.getUserId() + ")";
                 Toast.makeText(getApplicationContext(), msg, Toast.LENGTH_LONG).show();
+                TwitName =session.getUserName();
+
             }
 
             @Override
@@ -434,6 +437,7 @@ public class LoginActivity extends AppCompatActivity implements LoaderCallbacks<
 
             if (success) {
                 Intent I = new Intent(LoginActivity.this, MainActivity.class);
+                I.putExtra("TwitName",TwitName);
                 startActivity(I);
                 finish();
 

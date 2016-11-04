@@ -23,6 +23,7 @@ import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.view.Menu;
 import android.view.MenuItem;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import com.example.iancu.hungryhungry.fragment.RestaurantContent;
@@ -32,8 +33,7 @@ import com.example.iancu.hungryhungry.interfaces.MainActivityIntf;
 import com.example.iancu.hungryhungry.model.Categories;
 import com.example.iancu.hungryhungry.model.Category;
 import com.example.iancu.hungryhungry.model.NearbyRestaurant;
-import com.example.iancu.hungryhungry.model.Restaurant;
-import com.example.iancu.hungryhungry.presenter.TestPresenterImpl;
+import com.example.iancu.hungryhungry.presenter.MainPresenterImpl;
 import com.example.iancu.hungryhungry.service.FetchAddressService;
 import com.google.android.gms.common.ConnectionResult;
 import com.google.android.gms.common.api.GoogleApiClient;
@@ -61,9 +61,10 @@ public class MainActivity extends AppCompatActivity
     FloatingActionButton fab;
     @BindView(R.id.toolbar)
     Toolbar toolbar;
+    TextView username;
     Menu menu;
     RestaurantList list;
-    TestPresenterImpl presenter;
+    MainPresenterImpl presenter;
     List<NearbyRestaurant> theActualList;
 
     protected GoogleApiClient mGoogleApiClient;
@@ -80,6 +81,15 @@ public class MainActivity extends AppCompatActivity
         getSupportActionBar().setTitle("");
 
 
+//        Set username to the correct one
+        try {
+            username =(TextView)findViewById(R.id.username);
+            username.setText(getIntent().getExtras().getString("TwitName"));
+        } catch (Exception e) {
+            Log.e("ERROR", e.toString());
+        }
+
+
 //        FloatingActionButton fab = (FloatingActionButton) findViewById(R.id.fab);
         fab.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -88,7 +98,7 @@ public class MainActivity extends AppCompatActivity
 //                FragmentTransaction fm2 = getSupportFragmentManager().beginTransaction();
 //                fm2.replace(R.id.content_frame, list);
 //                fm2.commit();
-                Log.i("@(O_O)@",""+theActualList.size());
+                Log.i("@(O_O)@", "" + theActualList.size());
                 list.setRestaurantList(theActualList);
             }
         });
@@ -125,12 +135,12 @@ public class MainActivity extends AppCompatActivity
         mGoogleApiClient.connect();
         if (mGoogleApiClient.isConnected() && mLastLocation != null) {
             startIntentService();
-            Log.e("BOOP","Located");
+            Log.e("BOOP", "Located");
         }
 
 //        connect the presenter to the activity
-        presenter = new TestPresenterImpl(this);
-//        presenter.getCats();
+        presenter = new MainPresenterImpl(this);
+        presenter.getCats(getBaseContext());
 
 
 //        UserProfile profile =new UserProfile();
@@ -249,16 +259,15 @@ public class MainActivity extends AppCompatActivity
 //            menu.add(re.getName());
 //
 //        }
-        theActualList =rests;
+        theActualList = rests;
 //        list.setRestaurantList(theActualList);
-
 
 
     }
 
     @Override
     public void onConnected(@Nullable Bundle bundle) {
-        Log.e("Boop","Got Connected");
+        Log.e("Boop", "Got Connected");
         if (ActivityCompat.checkSelfPermission(this, android.Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED && ActivityCompat.checkSelfPermission(this, android.Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
 
             return;
@@ -320,12 +329,12 @@ public class MainActivity extends AppCompatActivity
          */
         @Override
         protected void onReceiveResult(int resultCode, Bundle resultData) {
-            Log.e("Boop","The address");
+            Log.e("Boop", "The address");
             // Display the address string or an error message sent from the intent service.
             String address = resultData.getString(Constants.RESULT_DATA_KEY);
             menu.add(address);
-            menu.add(mLastLocation.getLatitude()+"  "+mLastLocation.getLongitude());
-            Log.i("LAT AND LONG",mLastLocation.getLatitude()+"  "+mLastLocation.getLongitude());
+            menu.add(mLastLocation.getLatitude() + "  " + mLastLocation.getLongitude());
+            Log.i("LAT AND LONG", mLastLocation.getLatitude() + "  " + mLastLocation.getLongitude());
 
         }
 

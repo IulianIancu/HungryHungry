@@ -6,14 +6,17 @@ import com.google.gson.annotations.SerializedName;
 import java.util.ArrayList;
 import java.util.List;
 
+import io.realm.RealmList;
+import io.realm.RealmObject;
+
 /**
  * Created by Iancu on 01/11/2016.
  */
 
-public class RestaurantCategory {
+public class RestaurantCategory extends RealmObject {
     @SerializedName("categories")
     @Expose
-    private List<Category> categories = new ArrayList<Category>();
+    private RealmList<Category> categories = new RealmList<Category>();
 
     /**
      *
@@ -29,7 +32,7 @@ public class RestaurantCategory {
      * @param categories
      * The categories
      */
-    public void setCategories(List<Category> categories) {
+    public void setCategories(RealmList<Category> categories) {
         this.categories = categories;
     }
 }

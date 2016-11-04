@@ -3,7 +3,9 @@ package com.example.iancu.hungryhungry.model;
 import com.google.gson.annotations.Expose;
 import com.google.gson.annotations.SerializedName;
 
-public class Category {
+import io.realm.RealmObject;
+
+public class Category extends RealmObject {
 
     @SerializedName("categories")
     @Expose
