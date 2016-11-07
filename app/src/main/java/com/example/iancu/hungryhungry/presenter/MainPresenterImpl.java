@@ -8,6 +8,7 @@ import com.example.iancu.hungryhungry.connection.ConnectionService;
 import com.example.iancu.hungryhungry.connection.ZomatoAPI;
 import com.example.iancu.hungryhungry.interfaces.MainActivityIntf;
 import com.example.iancu.hungryhungry.model.Category;
+import com.example.iancu.hungryhungry.model.NearbyRestaurant;
 import com.example.iancu.hungryhungry.model.NearbySearch;
 import com.example.iancu.hungryhungry.model.RestaurantCategory;
 import com.github.pwittchen.reactivenetwork.library.ReactiveNetwork;
@@ -54,13 +55,21 @@ public class MainPresenterImpl extends MainPresenter {
                         // do something with isConnectedToInternet value
                         if (isConnectedToInternet) getCatsFromServer(context);
                         else getCatsFromDB(context);
+
+                        ReactiveNetwork.observeInternetConnectivity().unsubscribeOn(Schedulers.io());
                     }
                 });
 
 
 
 
+
     }
+
+    /**
+     * Returns the categories from the server
+     * @param context
+     */
     public void getCatsFromServer(Context context){
         Realm.init(context);
         final Realm realm =Realm.getDefaultInstance();
@@ -83,7 +92,9 @@ public class MainPresenterImpl extends MainPresenter {
                     public void onNext(RestaurantCategory restaurantCategory) {
                         List<Category> categories = restaurantCategory.getCategories();
                         realm.beginTransaction();
-                        realm.deleteAll();
+//                        realm.deleteAll();
+                        RealmQuery<RestaurantCategory> RestQuery =realm.where(RestaurantCategory.class);
+                        RestQuery.findAll().deleteAllFromRealm();
                         realm.copyToRealm(restaurantCategory);
                         realm.commitTransaction();
                         intf.recieveCategories(categories);
@@ -92,12 +103,16 @@ public class MainPresenterImpl extends MainPresenter {
                 }));
     }
 
+    /**
+     * Returns the categories from the database
+     * @param context
+     */
     public void getCatsFromDB(Context context){
         Realm.init(context);
         Realm realm =Realm.getDefaultInstance();
         RealmQuery<RestaurantCategory> categQuery =realm.where(RestaurantCategory.class);
-        RestaurantCategory RealmResult= categQuery.findFirst();
-        List<Category> categories =RealmResult.getCategories();
+        RestaurantCategory realmResult= categQuery.findFirst();
+        List<Category> categories =realmResult.getCategories();
         intf.recieveCategories(categories);
         realm.close();
 
@@ -108,8 +123,38 @@ public class MainPresenterImpl extends MainPresenter {
 
 
     @Override
-    public void getNearbyRes(Location location) {
+    public void getNearbyRes(final Location location, final Context context) {
 
+        Log.i("NUNU","IS THIS BEING CALLED?");
+        ReactiveNetwork.observeInternetConnectivity()
+                .subscribeOn(Schedulers.io())
+                .observeOn(AndroidSchedulers.mainThread())
+                .subscribe(new Action1<Boolean>() {
+                    @Override
+                    public void call(Boolean isConnectedToInternet) {
+                        // do something with isConnectedToInternet value
+                        Log.i("NANANA", "THIS IS A THING");
+                        if (isConnectedToInternet) getRestFromServer(context,location);
+                        else getRestFromDB(context);
+
+                    }
+                });
+
+        getRestFromServer(context,location);
+
+
+
+    }
+
+    /**
+     * Returns the restaurants nearby a location from the server
+     * @param context
+     * @param location
+     */
+    public void getRestFromServer(Context context, Location location){
+        Log.i("WOLOLOL", "BINGO BANGO BONGO I DON'T WANNA LEAVE THE CONGO");
+        Realm.init(context);
+        final Realm realm = Realm.getDefaultInstance();
         api = ConnectionService.getConnectionService();
         subscription.add(api.getNearbyRes(key1, location.getLatitude(), location.getLongitude())
                 .subscribeOn(Schedulers.newThread())
@@ -126,8 +171,35 @@ public class MainPresenterImpl extends MainPresenter {
 
                     @Override
                     public void onNext(NearbySearch nearbySearch) {
+                        realm.beginTransaction();
+//                        realm.deleteAll();
+                        RealmQuery<NearbySearch> categQuery =realm.where(NearbySearch.class);
+                        categQuery.findAll().deleteAllFromRealm();
+                        realm.copyToRealm(nearbySearch);
+                        realm.commitTransaction();
+                        realm.close();
+                        Log.i("DUNDUN",""+nearbySearch.getNearbyRestaurants().size());
                         intf.recieveRestaurants(nearbySearch.getNearbyRestaurants());
                     }
                 }));
     }
+
+    /**
+     * Returns the last set of restaurants saved, ( might be null)
+     * @param context
+     */
+    public void getRestFromDB(Context context){
+        Realm.init(context);
+        Realm realm =Realm.getDefaultInstance();
+        RealmQuery<NearbySearch> categQuery =realm.where(NearbySearch.class);
+        NearbySearch realmResult= categQuery.findFirst();
+        List<NearbyRestaurant> rests =realmResult.getNearbyRestaurants();
+        Log.i("DUNDUN","" +rests.size());
+        if (rests!=null)
+        intf.recieveRestaurants(rests);
+
+        realm.close();
+
+    }
+
 }

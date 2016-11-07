@@ -6,7 +6,10 @@ import com.google.gson.annotations.SerializedName;
 import java.util.ArrayList;
 import java.util.List;
 
-public class Popularity {
+import io.realm.RealmList;
+import io.realm.RealmObject;
+
+public class Popularity extends RealmObject{
 
     @SerializedName("popularity")
     @Expose
@@ -14,12 +17,12 @@ public class Popularity {
     @SerializedName("nightlife_index")
     @Expose
     private String nightlifeIndex;
-    @SerializedName("nearby_res")
-    @Expose
-    private List<String> nearbyRes = new ArrayList<String>();
-    @SerializedName("top_cuisines")
-    @Expose
-    private List<String> topCuisines = new ArrayList<String>();
+//    @SerializedName("nearby_res")
+//    @Expose
+//    private RealmList<StringObject> nearbyRes = new RealmList<StringObject>();
+//    @SerializedName("top_cuisines")
+//    @Expose
+//    private RealmList<StringObject> topCuisines = new RealmList<>();
     @SerializedName("popularity_res")
     @Expose
     private String popularityRes;
@@ -72,41 +75,58 @@ public class Popularity {
         this.nightlifeIndex = nightlifeIndex;
     }
 
-    /**
-     *
-     * @return
-     * The nearbyRes
-     */
-    public List<String> getNearbyRes() {
-        return nearbyRes;
-    }
-
-    /**
-     *
-     * @param nearbyRes
-     * The nearby_res
-     */
-    public void setNearbyRes(List<String> nearbyRes) {
-        this.nearbyRes = nearbyRes;
-    }
-
-    /**
-     *
-     * @return
-     * The topCuisines
-     */
-    public List<String> getTopCuisines() {
-        return topCuisines;
-    }
-
-    /**
-     *
-     * @param topCuisines
-     * The top_cuisines
-     */
-    public void setTopCuisines(List<String> topCuisines) {
-        this.topCuisines = topCuisines;
-    }
+//    /**
+//     *
+//     * @return
+//     * The nearbyRes
+//     */
+//    public List<String> getNearbyRes() {
+//        List<String> result= new ArrayList<>();
+//        for (StringObject s: nearbyRes) {
+//            result.add(s.getString());
+//        }
+//        return result;
+//
+//    }
+//
+//    /**
+//     *
+//     * @param nearbyRes
+//     * The nearby_res
+//     */
+//    public void setNearbyRes(List<String> nearbyRes) {
+//        RealmList<StringObject> result= new RealmList<>();
+//        for (String s: nearbyRes) {
+//            result.add(new StringObject(s));
+//        }
+//        this.nearbyRes = result;
+//    }
+//
+//    /**
+//     *
+//     * @return
+//     * The topCuisines
+//     */
+//    public List<String> getTopCuisines() {
+//        List<String> result= new ArrayList<>();
+//        for (StringObject s: topCuisines) {
+//            result.add(s.getString());
+//        }
+//        return result;
+//    }
+//
+//    /**
+//     *
+//     * @param topCuisines
+//     * The top_cuisines
+//     */
+//    public void setTopCuisines(List<String> topCuisines) {
+//        RealmList<StringObject> result= new RealmList<>();
+//        for (String s: topCuisines) {
+//            result.add(new StringObject(s));
+//        }
+//        this.topCuisines = result;
+//    }
 
     /**
      *
@@ -199,3 +219,4 @@ public class Popularity {
     }
 
 }
+

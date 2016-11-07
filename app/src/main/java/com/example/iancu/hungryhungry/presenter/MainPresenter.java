@@ -9,5 +9,5 @@ import android.location.Location;
 
 public abstract class MainPresenter {
     public abstract void getCats(Context context);
-    public abstract void getNearbyRes(Location location);
+    public abstract void getNearbyRes(Location location, Context context);
 }

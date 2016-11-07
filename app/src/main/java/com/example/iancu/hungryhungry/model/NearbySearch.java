@@ -6,11 +6,15 @@ import com.google.gson.annotations.SerializedName;
 import java.util.ArrayList;
 import java.util.List;
 
+import io.realm.Realm;
+import io.realm.RealmList;
+import io.realm.RealmObject;
+
 /**
  * Created by Iancu on 02/11/2016.
  */
 
-public class NearbySearch {
+public class NearbySearch extends RealmObject{
     @SerializedName("location")
     @Expose
     private Location location;
@@ -22,7 +26,7 @@ public class NearbySearch {
     private String link;
     @SerializedName("nearby_restaurants")
     @Expose
-    private List<NearbyRestaurant> nearbyRestaurants = new ArrayList<NearbyRestaurant>();
+    private RealmList<NearbyRestaurant> nearbyRestaurants = new RealmList<>();
 
     /**
      *
@@ -92,7 +96,7 @@ public class NearbySearch {
      * @param nearbyRestaurants
      * The nearby_restaurants
      */
-    public void setNearbyRestaurants(List<NearbyRestaurant> nearbyRestaurants) {
+    public void setNearbyRestaurants(RealmList<NearbyRestaurant> nearbyRestaurants) {
         this.nearbyRestaurants = nearbyRestaurants;
     }
 

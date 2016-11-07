@@ -6,7 +6,11 @@ import com.google.gson.annotations.SerializedName;
 import java.util.ArrayList;
 import java.util.List;
 
-public class Restaurant {
+import io.realm.Realm;
+import io.realm.RealmList;
+import io.realm.RealmObject;
+
+public class Restaurant extends RealmObject {
 
     @SerializedName("R")
     @Expose
@@ -38,9 +42,6 @@ public class Restaurant {
     @SerializedName("currency")
     @Expose
     private String currency;
-    @SerializedName("offers")
-    @Expose
-    private List<Object> offers = new ArrayList<Object>();
     @SerializedName("thumb")
     @Expose
     private String thumb;
@@ -250,24 +251,6 @@ public class Restaurant {
      */
     public void setCurrency(String currency) {
         this.currency = currency;
-    }
-
-    /**
-     *
-     * @return
-     * The offers
-     */
-    public List<Object> getOffers() {
-        return offers;
-    }
-
-    /**
-     *
-     * @param offers
-     * The offers
-     */
-    public void setOffers(List<Object> offers) {
-        this.offers = offers;
     }
 
     /**

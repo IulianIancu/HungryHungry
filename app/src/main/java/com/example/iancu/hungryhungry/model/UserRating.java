@@ -3,7 +3,9 @@ package com.example.iancu.hungryhungry.model;
 import com.google.gson.annotations.Expose;
 import com.google.gson.annotations.SerializedName;
 
-public class UserRating {
+import io.realm.RealmObject;
+
+public class UserRating  extends RealmObject{
 
     @SerializedName("aggregate_rating")
     @Expose

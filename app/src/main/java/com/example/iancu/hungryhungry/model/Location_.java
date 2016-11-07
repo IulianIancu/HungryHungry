@@ -3,7 +3,9 @@ package com.example.iancu.hungryhungry.model;
 import com.google.gson.annotations.Expose;
 import com.google.gson.annotations.SerializedName;
 
-public class Location_ {
+import io.realm.RealmObject;
+
+public class Location_  extends RealmObject{
 
     @SerializedName("address")
     @Expose

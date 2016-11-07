@@ -39,6 +39,7 @@ import com.google.android.gms.common.ConnectionResult;
 import com.google.android.gms.common.api.GoogleApiClient;
 import com.google.android.gms.location.LocationServices;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import butterknife.BindView;
@@ -65,7 +66,7 @@ public class MainActivity extends AppCompatActivity
     Menu menu;
     RestaurantList list;
     MainPresenterImpl presenter;
-    List<NearbyRestaurant> theActualList;
+    List<NearbyRestaurant> theActualList = new ArrayList<>();
 
     protected GoogleApiClient mGoogleApiClient;
     protected Location mLastLocation;
@@ -83,8 +84,11 @@ public class MainActivity extends AppCompatActivity
 
 //        Set username to the correct one
         try {
-            username =(TextView)findViewById(R.id.username);
-            username.setText(getIntent().getExtras().getString("TwitName"));
+            if (getIntent().getExtras().getString("TwitName").isEmpty()) {
+                View header = navigationView.getHeaderView(0);
+                username = (TextView) header.findViewById(R.id.username);
+                username.setText(getIntent().getExtras().getString("TwitName"));
+            }
         } catch (Exception e) {
             Log.e("ERROR", e.toString());
         }
@@ -166,6 +170,8 @@ public class MainActivity extends AppCompatActivity
                 FragmentTransaction fm2 = getSupportFragmentManager().beginTransaction();
                 fm2.replace(R.id.content_frame, list);
                 fm2.commit();
+                Log.i("EeeeEEEeeE", "call me maybe");
+                presenter.getNearbyRes(mLastLocation, getBaseContext());
                 return false;
             }
 
@@ -222,6 +228,7 @@ public class MainActivity extends AppCompatActivity
         String id = item.getTitle().toString();
         if (id.equals("Specific Restaurant")) {
             RestaurantContent content = new RestaurantContent();
+            getSupportFragmentManager().popBackStack();
             FragmentTransaction fm3 = getSupportFragmentManager().beginTransaction();
             fm3.replace(R.id.content_frame, content);
             fm3.commit();
@@ -260,7 +267,7 @@ public class MainActivity extends AppCompatActivity
 //
 //        }
         theActualList = rests;
-//        list.setRestaurantList(theActualList);
+        list.setRestaurantList(theActualList);
 
 
     }
@@ -286,7 +293,9 @@ public class MainActivity extends AppCompatActivity
             // user has requested an address, since we now have a connection to GoogleApiClient.
 
             startIntentService();
-            presenter.getNearbyRes(mLastLocation);
+
+//            THIS SENDS ALONG THE LOCATIO TO GET THE RESTAURANTS
+//            presenter.getNearbyRes(mLastLocation,getBaseContext());
 
         }
 
