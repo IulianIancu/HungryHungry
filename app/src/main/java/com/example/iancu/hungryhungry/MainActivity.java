@@ -33,6 +33,7 @@ import com.example.iancu.hungryhungry.interfaces.MainActivityIntf;
 import com.example.iancu.hungryhungry.model.Categories;
 import com.example.iancu.hungryhungry.model.Category;
 import com.example.iancu.hungryhungry.model.NearbyRestaurant;
+import com.example.iancu.hungryhungry.model.Restaurant;
 import com.example.iancu.hungryhungry.presenter.MainPresenterImpl;
 import com.example.iancu.hungryhungry.service.FetchAddressService;
 import com.google.android.gms.common.ConnectionResult;
@@ -241,16 +242,34 @@ public class MainActivity extends AppCompatActivity
         return true;
     }
 
+    /**
+     * Fragment interaction listener for the restaurant list fragment
+     * @param restaurant is the restaurant to be displayed
+     */
     @Override
-    public void onFragmentInteraction(int x) {
-        Log.i("DUDUDU", "" + x);
+    public void onFragmentInteraction(Restaurant restaurant) {
+        Log.i("HAAAAAaaaAAAaaAaAAaAa",restaurant.getName());
+        //Replace the fragments
+        RestaurantContent content = new RestaurantContent();
+        content.setTheRestaurant(restaurant);
+        getSupportFragmentManager().popBackStack();
+        FragmentTransaction fm3 = getSupportFragmentManager().beginTransaction();
+        fm3.replace(R.id.content_frame, content);
+        fm3.commit();
     }
 
+    /**
+     * Fragment interaction listener for the Restaurant description fragment
+     */
     @Override
     public void onFragmentInteraction() {
 
     }
 
+    /**
+     * This method listens to the presenter, and takes the categories of restaurants from it
+     * @param cats the categories of restaurants
+     */
     @Override
     public void recieveCategories(List<Category> cats) {
         for (Category cat : cats) {
@@ -259,6 +278,10 @@ public class MainActivity extends AppCompatActivity
         }
     }
 
+    /**
+     * This method listens to the presenter and takes the list of restaurants from it
+     * @param rests the list of restaurants
+     */
     @Override
     public void recieveRestaurants(List<NearbyRestaurant> rests) {
 //        for (NearbyRestaurant rest:rests) {
@@ -272,6 +295,10 @@ public class MainActivity extends AppCompatActivity
 
     }
 
+    /**
+     * This connects to the google API and returns the location
+     * @param bundle
+     */
     @Override
     public void onConnected(@Nullable Bundle bundle) {
         Log.e("Boop", "Got Connected");
@@ -307,6 +334,9 @@ public class MainActivity extends AppCompatActivity
         mGoogleApiClient.connect();
     }
 
+    /**
+     * This starts an intent service that returns the postcode of the current location
+     */
     protected void startIntentService() {
         // Create an intent for passing to the intent service responsible for fetching the address.
         Intent intent = new Intent(this, FetchAddressService.class);

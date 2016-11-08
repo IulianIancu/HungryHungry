@@ -9,6 +9,7 @@ import android.view.View;
 import android.view.ViewGroup;
 
 import com.example.iancu.hungryhungry.R;
+import com.example.iancu.hungryhungry.model.Restaurant;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
@@ -26,7 +27,8 @@ public class RestaurantContent extends Fragment {
     @BindView(R.id.restaurant_pager)
     ViewPager pager;
     ViewPagerAdapter adapter;
-    CharSequence titles[]={"Classic","Pop","Rock"};
+    Restaurant restaurant;
+    CharSequence titles[]={"Description","Map","Reviews"};
     int numboftabs =3;
 
     public RestaurantContent() {
@@ -44,6 +46,10 @@ public class RestaurantContent extends Fragment {
         pager.setAdapter(adapter);
 
         return v ;
+    }
+
+    public void setTheRestaurant(Restaurant restaurant){
+        this.restaurant =restaurant;
     }
 
 

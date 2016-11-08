@@ -15,6 +15,7 @@ import android.widget.TextView;
 import com.example.iancu.hungryhungry.R;
 import com.example.iancu.hungryhungry.adapter.RestaurantListAdapter;
 import com.example.iancu.hungryhungry.model.NearbyRestaurant;
+import com.example.iancu.hungryhungry.model.Restaurant;
 
 import java.util.List;
 
@@ -35,6 +36,7 @@ public class RestaurantList extends Fragment {
     public RestaurantList() {
         // Required empty public constructor
     }
+
     @BindView(R.id.restaurant_list)
     RecyclerView restaurantList;
     @BindView(R.id.swipe_refresh)
@@ -42,14 +44,15 @@ public class RestaurantList extends Fragment {
     @BindView(R.id.pushy)
     TextView pushy;
     RestaurantListAdapter adapter;
+
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         // Inflate the layout for this fragment
-        View v =inflater.inflate(R.layout.fragment_restaurant_list, container, false);
-        ButterKnife.bind(this,v);
-        if(mListener != null)
-            mListener.onFragmentInteraction(1337);
+        View v = inflater.inflate(R.layout.fragment_restaurant_list, container, false);
+        ButterKnife.bind(this, v);
+//        if(mListener != null)
+//            mListener.onFragmentInteraction(1337);
         restaurantList.setLayoutManager(new LinearLayoutManager(v.getContext()));
 
 
@@ -65,7 +68,6 @@ public class RestaurantList extends Fragment {
     }
 
 
-
     @Override
     public void onAttach(Context context) {
         super.onAttach(context);
@@ -77,21 +79,37 @@ public class RestaurantList extends Fragment {
         }
     }
 
-    public void setTest(String test1){
+    /**
+     * This function receives the clicked restaurant from the list and starts the display process for
+     * its details
+     *
+     * @param r
+     */
+    public void clikedRest(Restaurant r) {
+        if (r != null)
+            mListener.onFragmentInteraction(r);
+
 
     }
-    public void setRestaurantList (List<NearbyRestaurant> rests){
-        if (rests==null) Log.e("OH NOES","LIST IS DED");
-        if (restaurantList ==null){
-            Log.e("OH NOES","RECYCLER IS DED");
+
+    /**
+     * This function is used by the activity to affect the fragment
+     *
+     * @param rests
+     */
+    public void setRestaurantList(List<NearbyRestaurant> rests) {
+        if (rests == null) Log.e("OH NOES", "LIST IS DED");
+        if (restaurantList == null) {
+            Log.e("OH NOES", "RECYCLER IS DED");
 
             return;
         }
-        adapter =new RestaurantListAdapter(rests,R.layout.recycler_rest_list_row,getContext());
-        if (adapter ==null) Log.e("OH NOES","ADAPTER IS DED");
+        adapter = new RestaurantListAdapter(rests, R.layout.recycler_rest_list_row, this);
+        if (adapter == null) Log.e("OH NOES", "ADAPTER IS DED");
         restaurantList.setAdapter(adapter);
         pushy.setVisibility(View.GONE);
     }
+
     @Override
     public void onDetach() {
         super.onDetach();
@@ -110,6 +128,6 @@ public class RestaurantList extends Fragment {
      */
     public interface OnFragmentInteractionListener {
         // TODO: Update argument type and name
-        void onFragmentInteraction(int x);
+        void onFragmentInteraction(Restaurant restaurant);
     }
 }

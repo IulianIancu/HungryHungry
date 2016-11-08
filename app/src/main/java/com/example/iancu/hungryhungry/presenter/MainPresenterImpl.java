@@ -195,7 +195,7 @@ public class MainPresenterImpl extends MainPresenter {
         NearbySearch realmResult= categQuery.findFirst();
         List<NearbyRestaurant> rests =realmResult.getNearbyRestaurants();
         Log.i("DUNDUN","" +rests.size());
-        if (rests!=null)
+        if (!rests.isEmpty())
         intf.recieveRestaurants(rests);
 
         realm.close();

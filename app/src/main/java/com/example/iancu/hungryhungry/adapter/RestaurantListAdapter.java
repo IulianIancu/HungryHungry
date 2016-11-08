@@ -1,6 +1,7 @@
 package com.example.iancu.hungryhungry.adapter;
 
 import android.content.Context;
+import android.support.v4.app.Fragment;
 import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -11,6 +12,7 @@ import android.widget.Toast;
 
 import com.bumptech.glide.Glide;
 import com.example.iancu.hungryhungry.R;
+import com.example.iancu.hungryhungry.fragment.RestaurantList;
 import com.example.iancu.hungryhungry.model.NearbyRestaurant;
 import com.example.iancu.hungryhungry.model.Restaurant;
 
@@ -26,9 +28,9 @@ import butterknife.ButterKnife;
 public class RestaurantListAdapter extends RecyclerView.Adapter<RestaurantListAdapter.ViewHolder> {
     private List<NearbyRestaurant> rests;
     private int rowLayout;
-    private Context context;
+    private RestaurantList context;
 
-    public RestaurantListAdapter(List<NearbyRestaurant> rests,int rowLayout,Context contxt){
+    public RestaurantListAdapter(List<NearbyRestaurant> rests,int rowLayout,RestaurantList contxt){
         this.rests =rests;
         this.rowLayout=rowLayout;
         this.context=contxt;
@@ -44,7 +46,7 @@ public class RestaurantListAdapter extends RecyclerView.Adapter<RestaurantListAd
     @Override
     public void onBindViewHolder(ViewHolder holder, int position) {
         NearbyRestaurant r1 =rests.get(position);
-        Restaurant r2 =r1.getRestaurant();
+        final Restaurant r2 =r1.getRestaurant();
         holder.name.setText("Name : "+r2.getName());
         holder.price.setText("Price for two : "+r2.getAverageCostForTwo()+r2.getCurrency());
         holder.cuisines.setText("Cuisines : "+r2.getCuisines());
@@ -52,7 +54,8 @@ public class RestaurantListAdapter extends RecyclerView.Adapter<RestaurantListAd
         holder.setClickListener(new ItemClickListener() {
             @Override
             public void onClick(View view, int position) {
-                Toast.makeText(context,"BOOP ", Toast.LENGTH_SHORT).show();
+                Toast.makeText(context.getContext(),"BOOP "+ position +r2.getR().getResId(), Toast.LENGTH_SHORT).show();
+                context.clikedRest(r2);
             }
         });
 
@@ -84,7 +87,7 @@ public class RestaurantListAdapter extends RecyclerView.Adapter<RestaurantListAd
         }
 
         @Override
-        public void onClick(View v) {listener.onClick(v,getPosition());
+        public void onClick(View v) {listener.onClick(v,getLayoutPosition());
 
         }
     }
