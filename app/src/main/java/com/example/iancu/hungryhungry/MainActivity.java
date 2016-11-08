@@ -34,6 +34,7 @@ import com.example.iancu.hungryhungry.model.Categories;
 import com.example.iancu.hungryhungry.model.Category;
 import com.example.iancu.hungryhungry.model.NearbyRestaurant;
 import com.example.iancu.hungryhungry.model.Restaurant;
+import com.example.iancu.hungryhungry.model.ReviewSearch;
 import com.example.iancu.hungryhungry.presenter.MainPresenterImpl;
 import com.example.iancu.hungryhungry.service.FetchAddressService;
 import com.google.android.gms.common.ConnectionResult;
@@ -68,6 +69,7 @@ public class MainActivity extends AppCompatActivity
     RestaurantList list;
     MainPresenterImpl presenter;
     List<NearbyRestaurant> theActualList = new ArrayList<>();
+    Restaurant managedRestaurant;
 
     protected GoogleApiClient mGoogleApiClient;
     protected Location mLastLocation;
@@ -222,18 +224,23 @@ public class MainActivity extends AppCompatActivity
         return super.onOptionsItemSelected(item);
     }
 
+    /**
+     *Does something when a specific items is clicked
+     * @param item
+     * @return
+     */
     @SuppressWarnings("StatementWithEmptyBody")
     @Override
     public boolean onNavigationItemSelected(MenuItem item) {
         // Handle navigation view item clicks here.
         String id = item.getTitle().toString();
-        if (id.equals("Specific Restaurant")) {
-            RestaurantContent content = new RestaurantContent();
-            getSupportFragmentManager().popBackStack();
-            FragmentTransaction fm3 = getSupportFragmentManager().beginTransaction();
-            fm3.replace(R.id.content_frame, content);
-            fm3.commit();
-        }
+//        if (id.equals("Specific Restaurant")) {
+//            RestaurantContent content = new RestaurantContent();
+//            getSupportFragmentManager().popBackStack();
+//            FragmentTransaction fm3 = getSupportFragmentManager().beginTransaction();
+//            fm3.replace(R.id.content_frame, content);
+//            fm3.commit();
+//        }
         Toast.makeText(this, id, Toast.LENGTH_SHORT).show();
 
 
@@ -243,19 +250,15 @@ public class MainActivity extends AppCompatActivity
     }
 
     /**
-     * Fragment interaction listener for the restaurant list fragment
+     * Fragment interaction listener for the restaurant list fragment,
+     * gets triggered when the user clicks on a restaurant
      * @param restaurant is the restaurant to be displayed
      */
     @Override
     public void onFragmentInteraction(Restaurant restaurant) {
         Log.i("HAAAAAaaaAAAaaAaAAaAa",restaurant.getName());
-        //Replace the fragments
-        RestaurantContent content = new RestaurantContent();
-        content.setTheRestaurant(restaurant);
-        getSupportFragmentManager().popBackStack();
-        FragmentTransaction fm3 = getSupportFragmentManager().beginTransaction();
-        fm3.replace(R.id.content_frame, content);
-        fm3.commit();
+        managedRestaurant =restaurant;
+        presenter.getReviews(restaurant.getR().getResId(),getBaseContext());
     }
 
     /**
@@ -264,6 +267,17 @@ public class MainActivity extends AppCompatActivity
     @Override
     public void onFragmentInteraction() {
 
+    }
+
+    @Override
+    public void recieveReviews(ReviewSearch reviewSearch) {
+        RestaurantContent content = new RestaurantContent();
+        content.setTheRestaurant(managedRestaurant);
+        content.setReviews(reviewSearch);
+        getSupportFragmentManager().popBackStack();
+        FragmentTransaction fm3 = getSupportFragmentManager().beginTransaction();
+        fm3.replace(R.id.content_frame, content);
+        fm3.commit();
     }
 
     /**

@@ -10,6 +10,7 @@ import android.view.ViewGroup;
 
 import com.example.iancu.hungryhungry.R;
 import com.example.iancu.hungryhungry.model.Restaurant;
+import com.example.iancu.hungryhungry.model.ReviewSearch;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
@@ -28,8 +29,10 @@ public class RestaurantContent extends Fragment {
     ViewPager pager;
     ViewPagerAdapter adapter;
     Restaurant restaurant;
+    ReviewSearch reviewSearch;
     CharSequence titles[]={"Description","Map","Reviews"};
     int numboftabs =3;
+
 
     public RestaurantContent() {
         // Required empty public constructor
@@ -41,7 +44,7 @@ public class RestaurantContent extends Fragment {
                              Bundle savedInstanceState) {
         View v =inflater.inflate(R.layout.fragment_restaurant_content, container, false);
         ButterKnife.bind(this,v);
-        adapter =new ViewPagerAdapter(getFragmentManager(),titles,numboftabs,restaurant);
+        adapter =new ViewPagerAdapter(getFragmentManager(),titles,numboftabs,restaurant,reviewSearch);
         pager.setAdapter(adapter);
 
         return v ;
@@ -50,6 +53,9 @@ public class RestaurantContent extends Fragment {
     public void setTheRestaurant(Restaurant restaurant){
         this.restaurant =restaurant;
 
+    }
+    public void setReviews(ReviewSearch reviews){
+        this.reviewSearch =reviews;
     }
 
 
