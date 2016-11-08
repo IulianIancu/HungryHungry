@@ -40,9 +40,8 @@ public class RestaurantContent extends Fragment {
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         View v =inflater.inflate(R.layout.fragment_restaurant_content, container, false);
-
         ButterKnife.bind(this,v);
-        adapter =new ViewPagerAdapter(getFragmentManager(),titles,numboftabs);
+        adapter =new ViewPagerAdapter(getFragmentManager(),titles,numboftabs,restaurant);
         pager.setAdapter(adapter);
 
         return v ;
@@ -50,6 +49,7 @@ public class RestaurantContent extends Fragment {
 
     public void setTheRestaurant(Restaurant restaurant){
         this.restaurant =restaurant;
+
     }
 
 

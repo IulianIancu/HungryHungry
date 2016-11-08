@@ -14,6 +14,7 @@ import com.example.iancu.hungryhungry.R;
 import com.example.iancu.hungryhungry.adapter.ImageSlideAdapter;
 import com.example.iancu.hungryhungry.model.NearbyRestaurant;
 import com.example.iancu.hungryhungry.model.NearbySearch;
+import com.example.iancu.hungryhungry.model.Restaurant;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -39,6 +40,8 @@ public class TabDescription extends Fragment {
     TextView rating;
     @BindView(R.id.rest_score)
     TextView score;
+    Restaurant restaurant;
+
 
     public TabDescription() {
         // Required empty public constructor
@@ -50,27 +53,41 @@ public class TabDescription extends Fragment {
                              Bundle savedInstanceState) {
         View v =inflater.inflate(R.layout.fragment_tab_description, container, false);
         ButterKnife.bind(this,v);
-        imageRecy.setLayoutManager(new LinearLayoutManager(container.getContext(),LinearLayoutManager.HORIZONTAL,false));
+//        List<String> temps =new ArrayList<>();
+//        Realm.init(container.getContext());
+//        Realm realm = Realm.getDefaultInstance();
+//        RealmQuery<NearbySearch> categQuery =realm.where(NearbySearch.class);
+//        NearbySearch realmResult= categQuery.findFirst();
+//        List<NearbyRestaurant> rests =realmResult.getNearbyRestaurants();
+//        temps.add(rests.get(0).getRestaurant().getThumb());
+//        temps.add(rests.get(0).getRestaurant().getThumb());
+
         List<String> temps =new ArrayList<>();
-        Realm.init(container.getContext());
-        Realm realm = Realm.getDefaultInstance();
-        RealmQuery<NearbySearch> categQuery =realm.where(NearbySearch.class);
-        NearbySearch realmResult= categQuery.findFirst();
-        List<NearbyRestaurant> rests =realmResult.getNearbyRestaurants();
-        temps.add(rests.get(0).getRestaurant().getThumb());
-        temps.add(rests.get(0).getRestaurant().getThumb());
+        temps.add(restaurant.getFeaturedImage());
+        temps.add(restaurant.getThumb());
+
+        imageRecy.setLayoutManager(new LinearLayoutManager(container.getContext(),LinearLayoutManager.HORIZONTAL,false));
         imageRecy.setAdapter(new ImageSlideAdapter(temps,R.layout.recycler_image_pane,container.getContext()));
-        name.setText(rests.get(0).getRestaurant().getName());
-        location.setText(rests.get(0).getRestaurant().getLocation().getAddress());
-        price.setText(rests.get(0).getRestaurant().getAverageCostForTwo()+
-                        rests.get(0).getRestaurant().getCurrency());
-        rating.setText(rests.get(0).getRestaurant().getUserRating().getRatingText());
-        score.setText(rests.get(0).getRestaurant().getUserRating().getAggregateRating());
+
+        name.setText(restaurant.getName());
+        location.setText(restaurant.getLocation().getAddress());
+        price.setText(restaurant.getAverageCostForTwo()+ restaurant.getCurrency());
+        rating.setText(restaurant.getUserRating().getRatingText()+" ("+restaurant.getUserRating().getVotes()+" users)");
+        score.setText(restaurant.getUserRating().getAggregateRating());
 
 
 
 
         return v ;
+    }
+
+    /**
+     * This method is supposed to take the given restaurant
+     * @param r is the Restaurant object
+     */
+    public void setRestaurant(Restaurant r){
+        this.restaurant =r;
+
     }
 
 }
