@@ -1,9 +1,12 @@
-package com.example.iancu.hungryhungry.fragment;
+package com.example.iancu.hungryhungry.adapter;
 
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentStatePagerAdapter;
 
+import com.example.iancu.hungryhungry.fragment.MapPageFragment;
+import com.example.iancu.hungryhungry.fragment.TabDescription;
+import com.example.iancu.hungryhungry.fragment.TabReviews;
 import com.example.iancu.hungryhungry.model.Restaurant;
 import com.example.iancu.hungryhungry.model.ReviewSearch;
 
@@ -34,7 +37,11 @@ public class ViewPagerAdapter extends FragmentStatePagerAdapter {
             TabReviews r = new TabReviews();
             r.setReviews(reviewSearch);
             return r;
-        } else {
+        } else if(position==1) {
+            MapPageFragment r= new MapPageFragment();
+            r.setRestaurant(restaurant);
+            return r;
+        }else {
             TabDescription r = new TabDescription();
             r.setRestaurant(restaurant);
             return r;

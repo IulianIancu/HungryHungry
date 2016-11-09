@@ -9,6 +9,7 @@ import android.view.View;
 import android.view.ViewGroup;
 
 import com.example.iancu.hungryhungry.R;
+import com.example.iancu.hungryhungry.adapter.ViewPagerAdapter;
 import com.example.iancu.hungryhungry.model.Restaurant;
 import com.example.iancu.hungryhungry.model.ReviewSearch;
 

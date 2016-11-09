@@ -41,8 +41,7 @@ public class RestaurantList extends Fragment {
     RecyclerView restaurantList;
     @BindView(R.id.swipe_refresh)
     SwipeRefreshLayout refresh;
-    @BindView(R.id.pushy)
-    TextView pushy;
+
     RestaurantListAdapter adapter;
 
     @Override
@@ -107,7 +106,7 @@ public class RestaurantList extends Fragment {
         adapter = new RestaurantListAdapter(rests, R.layout.recycler_rest_list_row, this);
         if (adapter == null) Log.e("OH NOES", "ADAPTER IS DED");
         restaurantList.setAdapter(adapter);
-        pushy.setVisibility(View.GONE);
+
     }
 
     @Override

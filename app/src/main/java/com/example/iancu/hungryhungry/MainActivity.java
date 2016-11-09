@@ -60,8 +60,8 @@ public class MainActivity extends AppCompatActivity
     NavigationView navigationView;
     @BindView(R.id.drawer_layout)
     DrawerLayout drawer;
-    @BindView(R.id.fab)
-    FloatingActionButton fab;
+//    @BindView(R.id.fab)
+//    FloatingActionButton fab;
     @BindView(R.id.toolbar)
     Toolbar toolbar;
     TextView username;
@@ -87,28 +87,28 @@ public class MainActivity extends AppCompatActivity
 
 //        Set username to the correct one
         try {
-            if (getIntent().getExtras().getString("TwitName").isEmpty()) {
+
                 View header = navigationView.getHeaderView(0);
                 username = (TextView) header.findViewById(R.id.username);
                 username.setText(getIntent().getExtras().getString("TwitName"));
-            }
+
         } catch (Exception e) {
             Log.e("ERROR", e.toString());
         }
 
 
 //        FloatingActionButton fab = (FloatingActionButton) findViewById(R.id.fab);
-        fab.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-//                list = new RestaurantList();
-//                FragmentTransaction fm2 = getSupportFragmentManager().beginTransaction();
-//                fm2.replace(R.id.content_frame, list);
-//                fm2.commit();
-                Log.i("@(O_O)@", "" + theActualList.size());
-                list.setRestaurantList(theActualList);
-            }
-        });
+//        fab.setOnClickListener(new View.OnClickListener() {
+//            @Override
+//            public void onClick(View view) {
+////                list = new RestaurantList();
+////                FragmentTransaction fm2 = getSupportFragmentManager().beginTransaction();
+////                fm2.replace(R.id.content_frame, list);
+////                fm2.commit();
+//                Log.i("@(O_O)@", "" + theActualList.size());
+//                list.setRestaurantList(theActualList);
+//            }
+//        });
 
 //        DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
         ActionBarDrawerToggle toggle = new ActionBarDrawerToggle(
@@ -322,6 +322,8 @@ public class MainActivity extends AppCompatActivity
         }
         mLastLocation = LocationServices.FusedLocationApi.getLastLocation(mGoogleApiClient);
         if (mLastLocation != null) {
+            //call request to get nearby restaurants
+            presenter.getNearbyRes(mLastLocation, getBaseContext());
             // Determine whether a Geocoder is available.
             if (!Geocoder.isPresent()) {
                 Toast.makeText(this, "no_geocoder_available", Toast.LENGTH_LONG).show();

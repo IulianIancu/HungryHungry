@@ -3,12 +3,6 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     tools:context="com.example.iancu.hungryhungry.fragment.RestaurantList">
-    <TextView
-        android:id="@+id/pushy"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="PUSH DA BUTTON"
-        android:textSize="25sp"/>
 
     <android.support.v4.widget.SwipeRefreshLayout
         android:id="@+id/swipe_refresh"
