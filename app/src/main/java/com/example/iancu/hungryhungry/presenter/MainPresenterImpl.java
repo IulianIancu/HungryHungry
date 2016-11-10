@@ -186,6 +186,73 @@ public class MainPresenterImpl extends MainPresenter {
     }
 
     /**
+     * This returns a list of restaurants nearby a location
+     *  This one takes only the coordinates instead of the location
+     * @param Lat
+     * @param Long
+     * @param context
+     */
+    @Override
+    public void getNearbyRes2(final Double Lat,final Double Long, final Context context) {
+
+        ReactiveNetwork.observeInternetConnectivity()
+                .subscribeOn(Schedulers.io())
+                .observeOn(AndroidSchedulers.mainThread())
+                .subscribe(new Action1<Boolean>() {
+                    @Override
+                    public void call(Boolean isConnectedToInternet) {
+                        // do something with isConnectedToInternet value
+                        if (isConnectedToInternet) getRestFromServer2(context, Lat,Long);
+                        else getRestFromDB(context);
+
+                    }
+                });
+
+
+    }
+
+    /**
+     * Returns the restaurants nearby a location from the server
+     * Based on Lat Long
+     *
+     * @param context
+     * @param Lat
+     * @param Long
+     */
+    public void getRestFromServer2(Context context, Double Lat,Double Long) {
+        Log.i("WOLOLOL", "BINGO BANGO BONGO I DON'T WANNA LEAVE THE CONGO");
+        Realm.init(context);
+        final Realm realm = Realm.getDefaultInstance();
+        api = ConnectionService.getConnectionService();
+        subscription.add(api.getNearbyRes(key1, Lat, Long)
+                .subscribeOn(Schedulers.newThread())
+                .observeOn(AndroidSchedulers.mainThread())
+                .subscribe(new Observer<NearbySearch>() {
+                    @Override
+                    public void onCompleted() {
+                    }
+
+                    @Override
+                    public void onError(Throwable e) {
+                        Log.e("ERR", e.toString());
+                    }
+
+                    @Override
+                    public void onNext(NearbySearch nearbySearch) {
+                        realm.beginTransaction();
+//                        realm.deleteAll();
+                        RealmQuery<NearbySearch> categQuery = realm.where(NearbySearch.class);
+                        categQuery.findAll().deleteAllFromRealm();
+                        realm.copyToRealm(nearbySearch);
+                        realm.commitTransaction();
+                        realm.close();
+                        Log.i("DUNDUN", "" + nearbySearch.getNearbyRestaurants().size());
+                        intf.recieveRestaurants(nearbySearch.getNearbyRestaurants());
+                    }
+                }));
+    }
+
+    /**
      * Returns the last set of restaurants saved, ( might be null)
      *
      * @param context

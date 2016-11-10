@@ -37,6 +37,7 @@ import com.example.iancu.hungryhungry.model.Restaurant;
 import com.example.iancu.hungryhungry.model.ReviewSearch;
 import com.example.iancu.hungryhungry.presenter.MainPresenterImpl;
 import com.example.iancu.hungryhungry.service.FetchAddressService;
+import com.example.iancu.hungryhungry.service.FetchLocationService;
 import com.google.android.gms.common.ConnectionResult;
 import com.google.android.gms.common.api.GoogleApiClient;
 import com.google.android.gms.location.LocationServices;
@@ -60,7 +61,7 @@ public class MainActivity extends AppCompatActivity
     NavigationView navigationView;
     @BindView(R.id.drawer_layout)
     DrawerLayout drawer;
-//    @BindView(R.id.fab)
+    //    @BindView(R.id.fab)
 //    FloatingActionButton fab;
     @BindView(R.id.toolbar)
     Toolbar toolbar;
@@ -74,6 +75,7 @@ public class MainActivity extends AppCompatActivity
     protected GoogleApiClient mGoogleApiClient;
     protected Location mLastLocation;
     private AddressResultReceiver mResultReceiver;
+    private LocationResultReceiver mLocationReciever;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -88,9 +90,9 @@ public class MainActivity extends AppCompatActivity
 //        Set username to the correct one
         try {
 
-                View header = navigationView.getHeaderView(0);
-                username = (TextView) header.findViewById(R.id.username);
-                username.setText(getIntent().getExtras().getString("TwitName"));
+            View header = navigationView.getHeaderView(0);
+            username = (TextView) header.findViewById(R.id.username);
+            username.setText(getIntent().getExtras().getString("TwitName"));
 
         } catch (Exception e) {
             Log.e("ERROR", e.toString());
@@ -134,6 +136,7 @@ public class MainActivity extends AppCompatActivity
 
 //        Get google API going
         mResultReceiver = new AddressResultReceiver(new Handler());
+        mLocationReciever = new LocationResultReceiver(new Handler());
         mGoogleApiClient = new GoogleApiClient.Builder(this)
                 .addConnectionCallbacks(this)
                 .addOnConnectionFailedListener(this)
@@ -169,12 +172,13 @@ public class MainActivity extends AppCompatActivity
         search.setOnQueryTextListener(new SearchView.OnQueryTextListener() {
             @Override
             public boolean onQueryTextSubmit(String query) {
-                list = new RestaurantList();
-                FragmentTransaction fm2 = getSupportFragmentManager().beginTransaction();
-                fm2.replace(R.id.content_frame, list);
-                fm2.commit();
-                Log.i("EeeeEEEeeE", "call me maybe");
-                presenter.getNearbyRes(mLastLocation, getBaseContext());
+//                list = new RestaurantList();
+//                FragmentTransaction fm2 = getSupportFragmentManager().beginTransaction();
+//                fm2.replace(R.id.content_frame, list);
+//                fm2.commit();
+//                Log.i("EeeeEEEeeE", "call me maybe");
+//                presenter.getNearbyRes(mLastLocation, getBaseContext());
+                startSecondIntentService(query);
                 return false;
             }
 
@@ -224,7 +228,8 @@ public class MainActivity extends AppCompatActivity
     }
 
     /**
-     *Does something when a specific items is clicked
+     * Does something when a specific items is clicked
+     *
      * @param item
      * @return
      */
@@ -251,13 +256,14 @@ public class MainActivity extends AppCompatActivity
     /**
      * Fragment interaction listener for the restaurant list fragment,
      * gets triggered when the user clicks on a restaurant
+     *
      * @param restaurant is the restaurant to be displayed
      */
     @Override
     public void onFragmentInteraction(Restaurant restaurant) {
-        Log.i("HAAAAAaaaAAAaaAaAAaAa",restaurant.getName());
-        managedRestaurant =restaurant;
-        presenter.getReviews(restaurant.getR().getResId(),getBaseContext());
+        Log.i("HAAAAAaaaAAAaaAaAAaAa", restaurant.getName());
+        managedRestaurant = restaurant;
+        presenter.getReviews(restaurant.getR().getResId(), getBaseContext());
     }
 
     /**
@@ -268,6 +274,10 @@ public class MainActivity extends AppCompatActivity
 
     }
 
+    /**
+     * Recieves revies from presenter
+     * @param reviewSearch
+     */
     @Override
     public void recieveReviews(ReviewSearch reviewSearch) {
         RestaurantContent content = new RestaurantContent();
@@ -281,6 +291,7 @@ public class MainActivity extends AppCompatActivity
 
     /**
      * This method listens to the presenter, and takes the categories of restaurants from it
+     *
      * @param cats the categories of restaurants
      */
     @Override
@@ -293,6 +304,7 @@ public class MainActivity extends AppCompatActivity
 
     /**
      * This method listens to the presenter and takes the list of restaurants from it
+     *
      * @param rests the list of restaurants
      */
     @Override
@@ -310,6 +322,7 @@ public class MainActivity extends AppCompatActivity
 
     /**
      * This connects to the google API and returns the location
+     *
      * @param bundle
      */
     @Override
@@ -368,6 +381,25 @@ public class MainActivity extends AppCompatActivity
         startService(intent);
     }
 
+    /**
+     * This starts an intent service that returns the location for a given search()
+     */
+    protected void startSecondIntentService(String search) {
+        // Create an intent for passing to the intent service responsible for fetching the address.
+        Intent intent = new Intent(this, FetchLocationService.class);
+
+        // Pass the result receiver as an extra to the service.
+        intent.putExtra(Constants.LOCATION_RECEIVER, mLocationReciever);
+
+        // Pass the location data as an extra to the service.
+        intent.putExtra(Constants.LOCATION_DATA_ADDRESS, search);
+
+        // Start the service. If the service isn't already running, it is instantiated and started
+        // (creating a process for it if needed); if it is running then it remains running. The
+        // service kills itself automatically once all intents are processed.
+        startService(intent);
+    }
+
     @Override
     public void onConnectionFailed(@NonNull ConnectionResult connectionResult) {
         Log.i("OOPS", "Connection failed: " + connectionResult.getErrorCode());
@@ -387,8 +419,40 @@ public class MainActivity extends AppCompatActivity
             // Display the address string or an error message sent from the intent service.
             String address = resultData.getString(Constants.RESULT_DATA_KEY);
             menu.add(address);
+            search.setQuery(address, false);
             menu.add(mLastLocation.getLatitude() + "  " + mLastLocation.getLongitude());
             Log.i("LAT AND LONG", mLastLocation.getLatitude() + "  " + mLastLocation.getLongitude());
+
+        }
+
+    }
+
+    class LocationResultReceiver extends ResultReceiver {
+        public LocationResultReceiver(Handler handler) {
+            super(handler);
+        }
+
+        /**
+         * Receives data sent from FetchAddressIntentService and updates the UI in MainActivity.
+         */
+        @Override
+        protected void onReceiveResult(int resultCode, Bundle resultData) {
+            Log.i("Boop", "The Location");
+            // Display the address string or an error message sent from the intent service.
+            if (resultCode == Constants.SUCCESS_RESULT) {
+                ArrayList<String> address = resultData.getStringArrayList(Constants.RESULT_DATA_KEY);
+                menu.add(address.get(0));
+                list = new RestaurantList();
+                FragmentTransaction fm2 = getSupportFragmentManager().beginTransaction();
+                fm2.replace(R.id.content_frame, list);
+                fm2.commit();
+                presenter.getNearbyRes2(Double.parseDouble(address.get(0)),
+                        Double.parseDouble(address.get(1)),
+                        getBaseContext());
+            } else {
+                Log.e("Problem", "Did not return coords from intentService");
+            }
+
 
         }
 
