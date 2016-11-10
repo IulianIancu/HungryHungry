@@ -22,42 +22,42 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_toRightOf="@+id/user_image"
-        android:text="EEEEEEEEE"/>
+        android:text="Admin"/>
     <TextView
         android:id="@+id/user_lname"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_below="@+id/user_fname"
         android:layout_alignLeft="@+id/user_fname"
-        android:text="UUUUUUUUUUU"/>
+        android:text="Boss"/>
     <TextView
         android:id="@+id/user_email"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_below="@+id/user_lname"
         android:layout_alignLeft="@+id/user_lname"
-        android:text="AAAAAAAAAAA" />
+        android:text="Boss@admin.com" />
     <TextView
         android:id="@+id/user_password"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_below="@+id/user_email"
         android:layout_alignLeft="@+id/user_email"
-        android:text="OOOOOOOOOOOOOO"/>
+        android:text="master"/>
     <TextView
         android:id="@+id/user_dob"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_below="@+id/user_password"
         android:layout_alignLeft="@+id/user_password"
-        android:text="MMMMMMMMMMMM"/>
+        android:text="Date of birth: Yesterday"/>
     <TextView
         android:id="@+id/user_allergens"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_below="@+id/user_dob"
         android:layout_alignLeft="@+id/user_dob"
-        android:text="RRRRRRRRRRRRRRRRRRRRRR"/>
+        android:text="Vegan"/>
 
 
 

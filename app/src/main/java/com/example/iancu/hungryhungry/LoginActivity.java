@@ -106,6 +106,7 @@ public class LoginActivity extends AppCompatActivity implements LoaderCallbacks<
     RealmResults<LoginUser> users;
     //this is needed to check the password matches the user's password
     String loginCurrentUser;
+    String currentUserFullName ="";
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -119,17 +120,6 @@ public class LoginActivity extends AppCompatActivity implements LoaderCallbacks<
 //        mEmailView = (AutoCompleteTextView) findViewById(R.id.email);
         populateAutoComplete();
 
-//        mPasswordView = (EditText) findViewById(R.id.password);
-        mPasswordView.setOnEditorActionListener(new TextView.OnEditorActionListener() {
-            @Override
-            public boolean onEditorAction(TextView textView, int id, KeyEvent keyEvent) {
-                if (id == R.id.login || id == EditorInfo.IME_NULL) {
-                    attemptLogin();
-                    return true;
-                }
-                return false;
-            }
-        });
 
 //        mEmailSignInButton = (Button) findViewById(R.id.email_sign_in_button);
         mEmailSignInButton.setOnClickListener(new OnClickListener() {
@@ -293,7 +283,14 @@ public class LoginActivity extends AppCompatActivity implements LoaderCallbacks<
         } else {
             // Show a progress spinner, and kick off a background task to
             // perform the user login attempt.
+            for (LoginUser u:users) {
+                if (u.getEmail().equals(email)){
+                    currentUserFullName =u.getfName()+" " +u.getlName();
+                }
+
+            }
             showProgress(true);
+            realm.close();
             mAuthTask = new UserLoginTask(email, password);
             mAuthTask.execute((Void) null);
         }
@@ -303,8 +300,9 @@ public class LoginActivity extends AppCompatActivity implements LoaderCallbacks<
 //        return email.contains("@");
 //        return true;
         if (email.toLowerCase().equals("admin")) return true;
-        for (LoginUser u:users) {
-            if (u.getEmail().equals(email))return true;
+        for (LoginUser u : users) {
+            if (u.getEmail().equals(email))
+                return true;
         }
         return false;
 
@@ -456,8 +454,6 @@ public class LoginActivity extends AppCompatActivity implements LoaderCallbacks<
                     return pieces[1].equals(mPassword);
                 }
             }
-
-            // TODO: register the new account here.
             return true;
         }
 
@@ -469,6 +465,7 @@ public class LoginActivity extends AppCompatActivity implements LoaderCallbacks<
             if (success) {
                 Intent I = new Intent(LoginActivity.this, MainActivity.class);
                 I.putExtra("TwitName",TwitName);
+                I.putExtra("FullName",currentUserFullName);
                 startActivity(I);
                 finish();
 

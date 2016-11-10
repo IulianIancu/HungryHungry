@@ -9,7 +9,6 @@ import android.os.Handler;
 import android.os.ResultReceiver;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
-import android.support.design.widget.FloatingActionButton;
 import android.support.v4.app.ActivityCompat;
 import android.support.v4.app.FragmentTransaction;
 import android.support.v7.widget.SearchView;
@@ -65,7 +64,8 @@ public class MainActivity extends AppCompatActivity
 //    FloatingActionButton fab;
     @BindView(R.id.toolbar)
     Toolbar toolbar;
-    TextView username;
+    TextView userName;
+    TextView userSubtitle;
     Menu menu;
     RestaurantList list;
     MainPresenterImpl presenter;
@@ -87,12 +87,14 @@ public class MainActivity extends AppCompatActivity
         getSupportActionBar().setTitle("");
 
 
-//        Set username to the correct one
+//        Set userName to the correct one
         try {
 
             View header = navigationView.getHeaderView(0);
-            username = (TextView) header.findViewById(R.id.username);
-            username.setText(getIntent().getExtras().getString("TwitName"));
+            userName = (TextView) header.findViewById(R.id.username);
+            userSubtitle =(TextView) header.findViewById(R.id.user_subtitle);
+            userName.setText(getIntent().getExtras().getString("TwitName"));
+            userSubtitle.setText(getIntent().getExtras().getString("FullName"));
 
         } catch (Exception e) {
             Log.e("ERROR", e.toString());
