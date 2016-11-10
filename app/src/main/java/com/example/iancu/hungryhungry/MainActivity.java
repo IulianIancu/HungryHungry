@@ -187,7 +187,6 @@ public class MainActivity extends AppCompatActivity
 
         menu = navigationView.getMenu();
         menu.clear();
-        menu.add("Specific Restaurant");
 
 
     }

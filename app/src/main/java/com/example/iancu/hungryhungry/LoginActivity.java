@@ -34,6 +34,7 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import com.example.iancu.hungryhungry.fragment.Registration_Form;
+import com.example.iancu.hungryhungry.model.LoginUser;
 import com.twitter.sdk.android.Twitter;
 import com.twitter.sdk.android.core.Callback;
 import com.twitter.sdk.android.core.Result;
@@ -46,6 +47,9 @@ import butterknife.BindView;
 import butterknife.ButterKnife;
 import butterknife.OnClick;
 import io.fabric.sdk.android.Fabric;
+import io.realm.Realm;
+import io.realm.RealmQuery;
+import io.realm.RealmResults;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -98,6 +102,10 @@ public class LoginActivity extends AppCompatActivity implements LoaderCallbacks<
     @BindView(R.id.Login_content)
     FrameLayout content;
     String TwitName;
+    Realm realm;
+    RealmResults<LoginUser> users;
+    //this is needed to check the password matches the user's password
+    String loginCurrentUser;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -194,7 +202,6 @@ public class LoginActivity extends AppCompatActivity implements LoaderCallbacks<
         if (!mayRequestContacts()) {
             return;
         }
-
         getLoaderManager().initLoader(0, null, this);
     }
 
@@ -243,7 +250,10 @@ public class LoginActivity extends AppCompatActivity implements LoaderCallbacks<
         if (mAuthTask != null) {
             return;
         }
-
+        Realm.init(getBaseContext());
+        realm =Realm.getDefaultInstance();
+        RealmQuery<LoginUser> loginUserRealmQuery = realm.where(LoginUser.class);
+        users =loginUserRealmQuery.findAll();
         // Reset errors.
         mEmailView.setError(null);
         mPasswordView.setError(null);
@@ -255,12 +265,7 @@ public class LoginActivity extends AppCompatActivity implements LoaderCallbacks<
         boolean cancel = false;
         View focusView = null;
 
-        // Check for a valid password, if the user entered one.
-        if (!TextUtils.isEmpty(password) && !isPasswordValid(password)) {
-            mPasswordView.setError(getString(R.string.error_invalid_password));
-            focusView = mPasswordView;
-            cancel = true;
-        }
+
 
         // Check for a valid email address.
         if (TextUtils.isEmpty(email)) {
@@ -270,6 +275,14 @@ public class LoginActivity extends AppCompatActivity implements LoaderCallbacks<
         } else if (!isEmailValid(email)) {
             mEmailView.setError(getString(R.string.error_invalid_email));
             focusView = mEmailView;
+            cancel = true;
+        }
+        else loginCurrentUser = email;
+
+        // Check for a valid password, if the user entered one.
+        if (TextUtils.isEmpty(password) || !isPasswordValid(password)) {
+            mPasswordView.setError(getString(R.string.error_invalid_password));
+            focusView = mPasswordView;
             cancel = true;
         }
 
@@ -288,12 +301,30 @@ public class LoginActivity extends AppCompatActivity implements LoaderCallbacks<
 
     private boolean isEmailValid(String email) {
 //        return email.contains("@");
-        return true;
+//        return true;
+        if (email.toLowerCase().equals("admin")) return true;
+        for (LoginUser u:users) {
+            if (u.getEmail().equals(email))return true;
+        }
+        return false;
+
     }
 
     private boolean isPasswordValid(String password) {
 //        return password.length() > 4;
-        return true;
+//        return true;
+        try {
+            if (password.equals("master")) return true;
+            for (LoginUser u : users) {
+                if (u.getEmail().equals(loginCurrentUser) &&
+                        u.getPassword().equals(password))
+                    return true;
+            }
+            return false;
+        }catch (Exception e){
+            Log.e("PassError",e.toString());
+            return false;
+        }
     }
 
     /**
